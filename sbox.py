@@ -12,7 +12,7 @@ def sbox_lookup(bits):
 
 def sbox_lookup_bin(bits):
     sbox = [
-        # S-box values
+        # S-box 01
         ['1110', '0100', '1101', '0001', '0010', '1111', '1011', '1000',
          '0011', '1010', '0110', '1100', '0101', '1001', '0000', '0111'],
         ['0000', '1111', '0111', '0100', '1110', '0010', '1101', '0001',
@@ -22,6 +22,48 @@ def sbox_lookup_bin(bits):
         ['1111', '1100', '1000', '0010', '0100', '1001', '0001', '0111',
          '0101', '1011', '0011', '1110', '1010', '0000', '0110', '1101'],
     ]
+    print(bits)
     row = int(bits[0] + bits[5], 2)
     col = int(bits[1:5], 2)
-    return int(sbox[row][col], 2)
+    return str(sbox[row][col])# for decimal result =>int(sbox[row][col],2)
+
+def access_bit(data, num):
+    base = int(num // 8)
+    shift = int(num % 8)
+    return (data[base] >> shift) & 0x1
+def Zero_Padding(bitsarray:list):
+    if len(bitsarray)%6==0:
+        return bitsarray # return it self if it is divisible by 6
+    while not len(bitsarray)%6==0:
+        bitsarray.append(0)
+        print('ZeroAdded')
+    return bitsarray
+def Convert_to_bits(bytearray:bytes):
+    bitslist=[access_bit(data,i) for i in range(len(data)*8)]
+    return Zero_Padding(bitslist)
+def Convert_to_bytes(bitsarray:list[int]):
+    bitslist2=[int(i) for i in list(''.join(result))]
+
+    byteslist = [sum([byte[b] << b for b in range(0,8)])
+                for byte in zip(*(iter(bitslist2),) * 8)
+            ]
+    return bytes(byteslist)
+
+def sbox(bitsarray:list):
+    i=0
+    result=[]
+    while i < len(bitsarray)//6:
+        startindex=6*i
+        endindex=6*(i+1)
+        
+        inp=''.join(map(str, bitsarray[startindex:endindex]))
+        result.append(sbox_lookup_bin(inp))
+        i+=1
+    return result
+
+data=b'HeyThis is My Program!'
+
+
+result=sbox(Convert_to_bits(data))
+print(result)
+print(Convert_to_bytes(result))
