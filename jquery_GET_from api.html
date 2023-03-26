@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Example AJAX Request</title>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+	<div id="result"></div>
+
+	<script>
+		$(document).ready(function() {
+			// Define the API endpoint URL
+			var apiUrl = 'https://jsonplaceholder.typicode.com/todos/1';
+
+			// Define a function to make the AJAX request and update the HTML
+			function getData() {
+				$.ajax({
+					url: apiUrl,
+					method: 'GET',
+					success: function(response) {
+						// Update the HTML with the JSON response
+						$('#result').html(JSON.stringify(response));
+					},
+					error: function(error) {
+						console.log(error);
+					}
+				});
+			}
+
+			// Call the function once to display the initial data
+			getData();
+
+			// Set an interval to call the function every 5 seconds
+			setInterval(getData, 5000);
+		});
+	</script>
+</body>
+</html>
