@@ -26,7 +26,7 @@ def get_DB_records(table:str):
         results.append(result)
 
     # Convert the list of dictionaries to a JSON string
-    json_results = json.dumps(results)
+    json_results = json.dumps(results,default=str)
     return json_results
 app = Flask(__name__)
 
