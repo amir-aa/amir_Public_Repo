@@ -3,6 +3,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <netdb.h>
 
 int main() {
     // Create a socket
@@ -14,7 +15,13 @@ int main() {
 
     // Set up the address struct
     struct sockaddr_in server;
-    server.sin_addr.s_addr = inet_addr("127.0.0.1"); // Change to the IP address of the server you want to send the request to
+    char *hostname = "example.com"; // Change to the hostname or domain name you want to send the request to
+    struct hostent *he = gethostbyname(hostname);
+    if (he == NULL) {
+        printf("Error resolving hostname");
+        return 1;
+    }
+    server.sin_addr = *((struct in_addr *)he->h_addr);
     server.sin_family = AF_INET;
     server.sin_port = htons(80); // Change to the port number of the server you want to send the request to
 
