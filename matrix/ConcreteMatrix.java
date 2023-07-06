@@ -1,10 +1,9 @@
 package matrix;
 
 public class ConcreteMatrix extends AbstractMatrix {
-
+	
 	public  int getRows() {
 		return this.matrix.length;
-		
 	}
 	protected void sameDimensions(AbstractMatrix other) {
 		
@@ -45,17 +44,16 @@ public class ConcreteMatrix extends AbstractMatrix {
 				return newm;
 			}
 			@Override
-			public double[] getColumns() {
-				// TODO Auto-generated method stub
-				return 0;
+			public int getColumns() {
+				return this.matrix[0].length;
 			}
 			@Override
-			public double[] getValues() {
-				// TODO Auto-generated method stub
-				return null;
+			public double[][] getValues() {
+				
+				return this.matrix;
 			}
 			@Override
-			public double getValues(int i, int j) {
+			public double getValue(int i, int j) {
 				// TODO Auto-generated method stub
 				return this.matrix[i][j];
 			}
@@ -66,13 +64,23 @@ public class ConcreteMatrix extends AbstractMatrix {
 			}
 			@Override
 			public void print() {
-				// TODO Auto-generated method stub
+		       
+		        int r=getRows();
+		        int c=getColumns();
+		        for (int i=0; i<r;i++) {
+		            for (int j=0;j<c;j++) {System.out.printf("%.2f ", this.matrix[i][j]);}
+		            System.out.println();
+		        }
 				
 			}
 			@Override
 			public AbstractMatrix multiplyFromLeft(AbstractMatrix other) {
-				// TODO Auto-generated method stub
-				return null;
+	
+			    AbstractMatrix transposedThis=transpose();
+			    AbstractMatrix tother=other.transpose();
+			    AbstractMatrix result=tother.multiplyFromLeft(transposedThis);
+			    return result.transpose();
+				
 			}
 			@Override
 			public AbstractMatrix multiplyByScalar(AbstractMatrix scalar) {
@@ -81,14 +89,11 @@ public class ConcreteMatrix extends AbstractMatrix {
 			}
 			@Override
 			public AbstractMatrix transpose() {
-				int rows = getRows();
-		        int cols = getColumns();
-		        double[][] transposedValues = new double[cols][rows];
-
-		        for (int i =0;i<rows;i++) {
-		            for (int j=0;j<cols;j++) {
-		                transposedValues[j][i] = getValues(i, j);
-		            }
+				int row= getRows();
+		        int col= getColumns();
+		        double[][] transposedValues = new double[col][row];
+		        for(int i =0;i<row;i++) {
+		            for(int j=0;j<col;j++) {transposedValues[j][i]=getValue(i, j);}
 		        }
 		        ConcreteMatrix newcm=new ConcreteMatrix();
 		        newcm.matrix=transposedValues;//assign transposed to new object
@@ -97,11 +102,48 @@ public class ConcreteMatrix extends AbstractMatrix {
 			}
 		};
 
-
-		
 	
-				
+class ColumnMatrix extends ConcreteMatrix{
+	public ColumnMatrix(double val[][]) {
+				super();
+				this.matrix=val;
+				if(getColumns()>1){System.err.println("NOT ColMatrix!");System.exit(1);}
+			}
+			
+			@Override
+		    public RowMatrix transpose() {
+		        double[][] transposedValues = new double[getColumns()][getRows()];
+		        for (int i= 0;i<getRows();i++) {
+		            for (int j=0;j<getColumns();j++) {
+		                transposedValues[j][i]=getValue(i,j);
+		            }
+		        }
+		        return new RowMatrix(transposedValues);
+		    }
+		}
+	
+class RowMatrix extends ConcreteMatrix{
+	public RowMatrix(double[][] val) {
+        super();
+        this.matrix=val;
+	//System.out.println(this.getRows());
+        if(this.getRows()>1) {
+            System.err.println("NOT RowMatrix!");
+            System.exit(1);
+        }
+    }
+	@Override
+    public ColumnMatrix transpose() {
+        double[][] transposedValues = new double[getColumns()][getRows()];
 
-class RowMatrix extends ConcreteMatrix{}
-class ColumnMatrix extends ConcreteMatrix{}
-class SquareMatrix extends ConcreteMatrix{}
+        for (int i=0;i<getRows();i++) {
+            for (int j =0;j<getColumns();j++) {
+                transposedValues[j][i]=getValue(i,j);
+            }
+        }
+
+        return new ColumnMatrix(transposedValues);
+    }
+}
+
+
