@@ -1,3 +1,21 @@
+function Get-RandomBytes {
+    param(
+        [int] $Count
+    )
+
+    if ($Count -lt 1) {
+        throw "Count must be a positive integer greater than 0."
+    }
+
+    $RandomBytes = @()
+
+    for ($i = 0; $i -lt $Count; $i++) {
+        $RandomBytes += Get-Random -Minimum 0 -Maximum 255
+    }
+
+    return $RandomBytes
+}
+
 function RandomIPv4 {
     [IPAddress]::Parse([String](Get-Random))
 }
@@ -6,7 +24,7 @@ function TcpSendRecv {
     param(
         [int] $Port = 5005,
         $IP = "127.0.0.1",
-        $Message = "TRUN ." + "A"*6000 + "."
+        $Message =( Get-RandomBytes -Count 100)
     )
 
     # Get a random IP address
@@ -18,7 +36,7 @@ function TcpSendRecv {
     # Create Socket
     $Saddrf   = [System.Net.Sockets.AddressFamily]::InterNetwork
     $Stype    = [System.Net.Sockets.SocketType]::Stream
-    $Ptype    = [System.Net.Sockets.ProtocolType]::Tcp  # this could also be UDP
+    $Ptype    = [System.Net.Sockets.ProtocolType]::Tcp  # Tcp or Udp
     $Sock     = New-Object System.Net.Sockets.Socket $saddrf, $stype, $ptype
     #$Sock.TTL = 26
 
@@ -35,7 +53,7 @@ function TcpSendRecv {
         "{0} characters sent to: {1} " -f $Sent,$IP
         "Message is:`n$Message"
 
-        # Assuming receive buffer is 400
+      <#  # Edit this line if you want to Get response on TCP Assuming receive buffer is 400
         $buffer = New-Object System.Byte[] 400
         $Received = $Sock.Receive($buffer)   # Overflow Exploit!
         "Received $Received bytes"
@@ -45,6 +63,7 @@ function TcpSendRecv {
             $msg = $Encode.GetString($buffer)
             "TCP Message received: $msg"
         }
+        #>
     }
     catch {
         Write-Host "Error occurred: $_"
@@ -56,5 +75,5 @@ function TcpSendRecv {
     }
 }
 
-# Call the function with desired parameters
-TcpSendRecv -Port 5005 -IP "127.0.0.1" -Message "TRUN ." + "A"*6000 + "."
+# Call the function 
+TcpSendRecv 
