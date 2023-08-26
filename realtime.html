@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Real-time Data Display</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"></script>
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        socket.on('data_update', function(data) {
+            var table = document.getElementById('data-table');
+            table.innerHTML = '';
+
+            for (var i = 0; i < data.length; i++) {
+                var row = table.insertRow();
+                var idCell = row.insertCell(0);
+                var valueCell = row.insertCell(1);
+
+                idCell.innerHTML = data[i][0];
+                valueCell.innerHTML = data[i][1];
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>Real-time Data Display</h1>
+    <table id="data-table">
+        <tr>
+            <th>ID</th>
+            <th>Value</th>
+        </tr>
+    </table>
+</body>
+</html>
