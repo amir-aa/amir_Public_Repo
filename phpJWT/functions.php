@@ -77,3 +77,20 @@ function custom_register($request) {
         'email' => $email,
     );
 }
+
+//-----------------------------jwt-----------------------
+
+function login_user_from_token() {
+    if (isset($_GET['token'])) {
+        $token = $_GET['token'];
+        $user_id = validate_jwt_token($token);
+
+        if ($user_id) {
+            wp_set_current_user($user_id);
+            wp_set_auth_cookie($user_id);
+            wp_redirect(home_url());
+            exit;
+        }
+    }
+}
+add_action('init', 'login_user_from_token');
